@@ -6,7 +6,7 @@ An investigator searches incidents, and the portal resolves the external camera 
 
 ## What is real, and what is mock
 
-`Genetec:Mode=Mock` is the default. It uses a synthetic camera catalog and a clearly labeled playback surface. It does not contact Security Center and it does not present mock video as a Genetec recording.
+`Genetec:Mode=Mock` is the default. It uses a synthetic camera catalog and does not contact Security Center. For `CAM-ENTRANCE-01`, mock mode can play a local Big Buck Bunny sample (`frontend/public/demo-media/bunny.mp4`) and labels it **Demo mode**. That file is not a Genetec archived recording. Other cameras keep the mock clock. See `docs/demo-recording-guide.md`.
 
 `Genetec:Mode=Real` with `Genetec:RealTransport=WebSdk` calls the official Web-based SDK for directory authentication, camera discovery, and `VideoSequence` availability. Browser playback loads `gwp.js` from the Media Gateway and requests tokens through this API so the SDK certificate and password stay on the server.
 
@@ -84,3 +84,4 @@ cd frontend && npm test
 - `docs/genetec-integration.md`
 - `docs/api-documentation.md`
 - `docs/poc-demonstration.md`
+- `docs/demo-recording-guide.md`

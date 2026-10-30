@@ -289,3 +289,58 @@ public class WebSdkGenetecServiceTests
             Task.FromResult(_responder(request));
     }
 }
+
+public class DemoTimestampMapperTests
+{
+    private static readonly DateTime Anchor = new(2026, 10, 30, 2, 15, 20, DateTimeKind.Utc);
+
+    [Fact]
+    public void Incident_offset_is_the_difference_from_recording_start()
+    {
+        var start = DemoTimestampMapper.RecordingStartForAnchor(Anchor, 180);
+        var timeline = DemoTimestampMapper.Map(start, 600, Anchor, 60, 60);
+
+        Assert.NotNull(timeline);
+        Assert.Equal(180, timeline!.IncidentOffsetSeconds, 3);
+        Assert.Equal(120, timeline.PlaybackStartOffsetSeconds, 3);
+        Assert.Equal(240, timeline.PlaybackEndOffsetSeconds, 3);
+        Assert.Equal(180, timeline.SeekOffsetSeconds, 3);
+        Assert.Equal(Anchor, DemoTimestampMapper.UtcAtOffset(start, timeline.SeekOffsetSeconds));
+    }
+
+    [Fact]
+    public void Playback_window_is_clamped_to_the_media_duration()
+    {
+        var start = new DateTime(2026, 10, 30, 0, 0, 0, DateTimeKind.Utc);
+        var timeline = DemoTimestampMapper.Map(start, 100, start.AddSeconds(10), 60, 60);
+
+        Assert.NotNull(timeline);
+        Assert.Equal(0, timeline!.PlaybackStartOffsetSeconds, 3);
+        Assert.Equal(70, timeline.PlaybackEndOffsetSeconds, 3);
+    }
+
+    [Fact]
+    public void Incident_outside_the_recording_is_rejected()
+    {
+        var start = new DateTime(2026, 10, 30, 0, 0, 0, DateTimeKind.Utc);
+        Assert.Null(DemoTimestampMapper.Map(start, 100, start.AddSeconds(101), 60, 60));
+        Assert.Null(DemoTimestampMapper.Map(start, 0, start, 60, 60));
+        Assert.Null(DemoTimestampMapper.Map(start, 100, start.AddSeconds(-1), 60, 60));
+    }
+
+    [Fact]
+    public void Measured_sample_leaves_footage_before_and_after_the_entrance_incident()
+    {
+        const double duration = 596.458333;
+        var start = DemoTimestampMapper.RecordingStartForAnchor(Anchor, 180);
+        var timeline = DemoTimestampMapper.Map(start, duration, Anchor, 60, 60);
+
+        Assert.NotNull(timeline);
+        Assert.Equal(new DateTime(2026, 10, 30, 2, 12, 20, DateTimeKind.Utc), start);
+        Assert.Equal(180, timeline!.SeekOffsetSeconds, 3);
+        Assert.Equal(120, timeline.PlaybackStartOffsetSeconds, 3);
+        Assert.Equal(240, timeline.PlaybackEndOffsetSeconds, 3);
+        Assert.True(timeline.SeekOffsetSeconds - 60 >= 0);
+        Assert.True(timeline.SeekOffsetSeconds + 60 <= duration);
+    }
+}

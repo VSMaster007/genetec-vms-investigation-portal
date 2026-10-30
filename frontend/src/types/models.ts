@@ -101,6 +101,27 @@ export interface PlaybackSession {
   preEventSeconds: number
   postEventSeconds: number
   availability: RecordingAvailability
+  demo: DemoRecording | null
+}
+
+export interface DemoRecording {
+  mediaUrl: string
+  sourceName: string
+  sourceUrl: string
+  cameraName: string
+  externalCameraId: string
+  location: string
+  cameraType: string
+  cameraStatus: string
+  integrationMode: string
+  recordingStartUtc: string
+  recordingEndUtc: string
+  durationSeconds: number
+  incidentOffsetSeconds: number
+  playbackStartOffsetSeconds: number
+  playbackEndOffsetSeconds: number
+  seekOffsetSeconds: number
+  playbackEngine: string
 }
 
 export interface ComponentCheck {

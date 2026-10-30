@@ -14,6 +14,23 @@ public sealed class PlaybackOptions
     public int MaxWindowSeconds { get; set; } = 3600;
 }
 
+public sealed class DemoMediaOptions
+{
+    public const string SectionName = "DemoMedia";
+    public bool Enabled { get; set; }
+    public string ExternalCameraId { get; set; } = "CAM-ENTRANCE-01";
+    public string MediaUrl { get; set; } = "/demo-media/bunny.mp4";
+    public string SourceName { get; set; } = "Big Buck Bunny Sample MP4";
+    public string SourceUrl { get; set; } = "https://docs.evostream.com/sample_content/assets/bunny.mp4";
+    public string CameraName { get; set; } = "Main Entrance Camera";
+    public string Location { get; set; } = "Main Entrance";
+    public string CameraType { get; set; } = "IP Camera";
+    public string CameraStatus { get; set; } = "Online";
+    public double DurationSeconds { get; set; }
+    public string AnchorTimestampUtc { get; set; } = "2026-10-30T02:15:20Z";
+    public double IncidentOffsetSeconds { get; set; } = 180;
+}
+
 public sealed class JwtOptions
 {
     public const string SectionName = "Jwt";

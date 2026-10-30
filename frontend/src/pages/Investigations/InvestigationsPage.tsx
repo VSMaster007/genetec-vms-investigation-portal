@@ -5,7 +5,7 @@ import { GenetecVideoPlayer } from '../../components/player/GenetecVideoPlayer'
 import { usePreferences } from '../../hooks/usePreferences'
 import { ApiError, api } from '../../services/api'
 import type { IncidentPage, PlaybackSession } from '../../types/models'
-import { formatInZone } from '../../utils/time'
+import { formatDate, formatInZone } from '../../utils/time'
 
 export function InvestigationsPage() {
   const { incidentId } = useParams()
@@ -79,7 +79,10 @@ export function InvestigationsPage() {
             <li key={incident.id}>
               <Link to={`/investigations/${incident.id}?${params.toString()}`} className={`block rounded border px-3 py-2 text-sm ${incident.id === incidentId ? 'border-accent bg-panel2' : 'border-line'}`}>
                 <span className="font-medium">{incident.externalIncidentId}</span>
-                <span className="mt-1 block text-mist">{incident.title}</span>
+                <span className="mt-1 block">{incident.title}</span>
+                <span className="mt-1 block text-xs text-mist">{incident.eventType}</span>
+                <span className="block text-xs text-mist">{incident.location}</span>
+                <span className="block text-xs text-mist">{formatDate(incident.eventTimestampUtc, preferences.timeZone)}</span>
               </Link>
             </li>
           ))}
@@ -95,18 +98,32 @@ export function InvestigationsPage() {
       </section>
       {incidentId && session ? (
         <aside className="overflow-auto border-l border-line p-4 text-sm">
-          <h2 className="text-lg font-semibold">{session.title}</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-200">{session.demo ? 'Demo mode — sample video' : 'Investigation'}</p>
+          <h2 className="mt-2 text-lg font-semibold">{session.title}</h2>
           <dl className="mt-4 space-y-3">
-            <Detail label="Incident" value={session.externalIncidentId} />
-            <Detail label="Camera" value={session.cameraName ?? 'Unmapped'} />
+            <Detail label="Incident ID" value={session.externalIncidentId} />
+            <Detail label="Event type" value={page?.items.find((item) => item.id === incidentId)?.eventType ?? '—'} />
+            <Detail label="Camera" value={session.demo?.cameraName ?? session.cameraName ?? 'Unmapped'} />
             <Detail label="External camera" value={session.externalCameraId} />
-            <Detail label="Genetec GUID" value={session.genetecCameraGuid ?? 'Not resolved'} />
-            <Detail label="Event" value={formatInZone(session.seekUtc, preferences.timeZone)} />
+            <Detail label="Location" value={session.demo?.location ?? page?.items.find((item) => item.id === incidentId)?.location ?? '—'} />
+            {session.demo ? <Detail label="Camera status" value={`${session.demo.cameraType} · ${session.demo.cameraStatus}`} /> : null}
+            <Detail label="Incident timestamp" value={formatInZone(session.seekUtc, preferences.timeZone)} />
             <Detail label="Window" value={`${formatInZone(session.windowStartUtc, preferences.timeZone)} – ${formatInZone(session.windowEndUtc, preferences.timeZone)}`} />
-            <Detail label="Recording" value={`${session.availability.state}${session.availability.isMockArchive ? ' · mock archive' : ''}`} />
-            <Detail label="Playback" value={session.isGenetecRecording ? 'Genetec Web Player' : 'Mock surface'} />
+            <Detail label="Recording status" value={session.demo ? 'Sample recording available' : `${session.availability.state}${session.availability.isMockArchive ? ' · mock archive' : ''}`} />
+            <Detail label="Playback status" value={session.canPlay ? 'Ready' : 'Unavailable'} />
+            <Detail label="Source" value={session.demo ? 'Local MP4 demo' : session.isGenetecRecording ? 'Genetec Web Player' : 'Mock surface'} />
+            {session.demo ? (
+              <>
+                <Detail label="Video source" value={session.demo.sourceName} />
+                <Detail label="Integration" value="Simulated camera recording" />
+                <Detail label="Playback engine" value={session.demo.playbackEngine} />
+                <Detail label="Media offset" value={`${session.demo.seekOffsetSeconds.toFixed(3)} s`} />
+              </>
+            ) : (
+              <Detail label="Genetec GUID" value={session.genetecCameraGuid ?? 'Not resolved'} />
+            )}
           </dl>
-          <p className="mt-4 text-mist">{session.availability.message}</p>
+          <p className="mt-4 text-mist">{session.demo ? 'This sample is not an archived Genetec recording.' : session.availability.message}</p>
         </aside>
       ) : null}
     </div>
