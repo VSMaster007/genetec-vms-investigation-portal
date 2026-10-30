@@ -235,6 +235,11 @@ export function GenetecVideoPlayer({
         {demo && session.canPlay ? (
           <video ref={videoRef} className="h-full w-full bg-black object-contain" src={demo.mediaUrl} muted={muted} preload="auto" playsInline />
         ) : null}
+        {demo && session.canPlay ? (
+          <p className="pointer-events-none absolute left-3 top-3 rounded bg-black/75 px-3 py-1.5 font-mono text-sm tracking-wide text-paper">
+            {formatClock(playhead, 'UTC')} UTC
+          </p>
+        ) : null}
         {mockClock ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 px-8 text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-300">Mock playback — not a Genetec recording</p>
