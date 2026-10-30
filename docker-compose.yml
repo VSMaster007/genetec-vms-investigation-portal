@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: investigation
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-investigation}
+      POSTGRES_DB: investigation
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U investigation -d investigation"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: Host=postgres;Port=5432;Database=investigation;Username=investigation;Password=${POSTGRES_PASSWORD:-investigation}
+      Jwt__Key: ${JWT_KEY:-dev-only-change-this-jwt-signing-key}
+      Seed__AllowDevPasswords: "true"
+      Seed__AdminPassword: ${SEED_ADMIN_PASSWORD:-ChangeMe-Admin-123}
+      Seed__InvestigatorPassword: ${SEED_INVESTIGATOR_PASSWORD:-ChangeMe-Investigator-123}
+      Seed__CreateSampleMappings: "true"
+      IncidentSource__Mode: ${INCIDENT_SOURCE_MODE:-Mock}
+      IncidentSource__SeedPath: /app/seed/incidents.json
+      IncidentSource__BaseUrl: ${INCIDENT_SOURCE_BASE_URL:-}
+      IncidentSource__ApiKey: ${INCIDENT_SOURCE_API_KEY:-}
+      Genetec__Mode: ${GENETEC_MODE:-Mock}
+      Genetec__RealTransport: ${GENETEC_REAL_TRANSPORT:-WebSdk}
+      Genetec__AllowInvalidCertificates: ${GENETEC_ALLOW_INVALID_CERTIFICATES:-false}
+      Genetec__WebSdk__BaseUrl: ${GENETEC_WEBSDK_BASE_URL:-}
+      Genetec__WebSdk__Username: ${GENETEC_USERNAME:-}
+      Genetec__WebSdk__Password: ${GENETEC_PASSWORD:-}
+      Genetec__WebSdk__ApplicationId: ${GENETEC_APPLICATION_ID:-}
+      Genetec__MediaGateway__ServerEndpoint: ${GENETEC_MEDIA_GATEWAY_SERVER:-}
+      Genetec__MediaGateway__BrowserEndpoint: ${GENETEC_MEDIA_GATEWAY_BROWSER:-}
+      Genetec__MediaGateway__Username: ${GENETEC_MEDIA_GATEWAY_USERNAME:-}
+      Genetec__MediaGateway__Password: ${GENETEC_MEDIA_GATEWAY_PASSWORD:-}
+      Genetec__MediaGateway__SdkCertificate: ${GENETEC_SDK_CERTIFICATE:-}
+      Genetec__Platform__Directory: ${GENETEC_DIRECTORY:-}
+      Genetec__Platform__Username: ${GENETEC_USERNAME:-}
+      Genetec__Platform__Password: ${GENETEC_PASSWORD:-}
+      Genetec__Platform__ApplicationId: ${GENETEC_APPLICATION_ID:-}
+      Genetec__Platform__AcceptDirectoryCertificate: ${GENETEC_ACCEPT_DIRECTORY_CERTIFICATE:-false}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    ports:
+      - "8088:80"
+
+volumes:
+  pgdata:

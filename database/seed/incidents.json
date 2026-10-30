@@ -1,0 +1,101 @@
+[
+  {
+    "incidentId": "INC-2026-001",
+    "title": "Unauthorized entrance",
+    "description": "Motion detected near the main entrance after the door remained open.",
+    "cameraId": "CAM-ENTRANCE-01",
+    "timestamp": "2026-10-30T02:15:20Z",
+    "eventType": "Motion Detection",
+    "location": "Main Entrance"
+  },
+  {
+    "incidentId": "INC-2026-002",
+    "title": "Lobby tailgating",
+    "description": "A second person followed a badge holder through the lobby turnstile.",
+    "cameraId": "CAM-LOBBY-02",
+    "timestamp": "2026-10-30T06:42:11Z",
+    "eventType": "Access Control",
+    "location": "Lobby"
+  },
+  {
+    "incidentId": "INC-2026-003",
+    "title": "Parking lot loitering",
+    "description": "A vehicle remained in the west parking aisle with the lights off.",
+    "cameraId": "CAM-PARKING-03",
+    "timestamp": "2026-10-29T18:05:00Z",
+    "eventType": "Loitering",
+    "location": "West Parking"
+  },
+  {
+    "incidentId": "INC-2026-004",
+    "title": "Loading dock after hours",
+    "description": "The dock door opened outside the receiving schedule. The archive retention window has passed.",
+    "cameraId": "CAM-LOADING-04",
+    "timestamp": "2026-10-01T14:35:20Z",
+    "eventType": "Door Forced",
+    "location": "Loading Dock"
+  },
+  {
+    "incidentId": "INC-2026-005",
+    "title": "Server room alarm",
+    "description": "The server room door contact opened. Playback permission is denied for this camera.",
+    "cameraId": "CAM-SERVER-05",
+    "timestamp": "2026-10-30T01:12:00Z",
+    "eventType": "Alarm",
+    "location": "Server Room"
+  },
+  {
+    "incidentId": "INC-2026-006",
+    "title": "Entrance recording gap",
+    "description": "Motion was reported during the camera's daily maintenance gap.",
+    "cameraId": "CAM-ENTRANCE-01",
+    "timestamp": "2026-10-30T03:05:10Z",
+    "eventType": "Motion Detection",
+    "location": "Main Entrance"
+  },
+  {
+    "incidentId": "INC-2026-007",
+    "title": "Roof access",
+    "description": "A door contact on the roof stair opened. This camera has no Genetec mapping.",
+    "cameraId": "CAM-ROOF-99",
+    "timestamp": "2026-10-30T04:00:00Z",
+    "eventType": "Door Forced",
+    "location": "Roof"
+  },
+  {
+    "incidentId": "INC-2026-008",
+    "title": "Perimeter crossing",
+    "description": "Video analytics reported a crossing on the north fence line.",
+    "cameraId": "CAM-PERIMETER-06",
+    "timestamp": "2026-10-28T22:11:45Z",
+    "eventType": "Video Analytics",
+    "location": "North Perimeter"
+  },
+  {
+    "incidentId": "INC-2026-009",
+    "title": "Reception delivery",
+    "description": "An unscheduled delivery was left at the reception desk.",
+    "cameraId": "CAM-LOBBY-02",
+    "timestamp": "2026-10-30T09:20:00Z",
+    "eventType": "Motion Detection",
+    "location": "Lobby"
+  },
+  {
+    "incidentId": "INC-2026-010",
+    "title": "Entrance after closing",
+    "description": "The main entrance door was held open after the site closed.",
+    "cameraId": "CAM-ENTRANCE-01",
+    "timestamp": "2026-10-27T16:48:33Z",
+    "eventType": "Door Forced",
+    "location": "Main Entrance"
+  },
+  {
+    "incidentId": "INC-BAD-TIME",
+    "title": "Rejected sample",
+    "description": "This row is rejected during sync because the timestamp has no offset.",
+    "cameraId": "CAM-LOBBY-02",
+    "timestamp": "2026-10-30T12:00:00",
+    "eventType": "Motion Detection",
+    "location": "Lobby"
+  }
+]
