@@ -15,6 +15,7 @@ public static class InfrastructureServiceCollectionExtensions
     {
         services.Configure<PortalOptions>(configuration.GetSection(PortalOptions.SectionName));
         services.Configure<PlaybackOptions>(configuration.GetSection(PlaybackOptions.SectionName));
+        services.Configure<DemoMediaOptions>(configuration.GetSection(DemoMediaOptions.SectionName));
         services.Configure<SeedOptions>(configuration.GetSection(SeedOptions.SectionName));
         services.Configure<IncidentSourceOptions>(configuration.GetSection(IncidentSourceOptions.SectionName));
         services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));

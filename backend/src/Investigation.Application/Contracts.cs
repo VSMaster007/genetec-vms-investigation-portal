@@ -236,7 +236,27 @@ public sealed record PlaybackSessionDto(
     DateTime WindowEndUtc,
     int PreEventSeconds,
     int PostEventSeconds,
-    RecordingAvailabilityDto Availability);
+    RecordingAvailabilityDto Availability,
+    DemoRecordingDto? Demo);
+
+public sealed record DemoRecordingDto(
+    string MediaUrl,
+    string SourceName,
+    string SourceUrl,
+    string CameraName,
+    string ExternalCameraId,
+    string Location,
+    string CameraType,
+    string CameraStatus,
+    string IntegrationMode,
+    DateTime RecordingStartUtc,
+    DateTime RecordingEndUtc,
+    double DurationSeconds,
+    double IncidentOffsetSeconds,
+    double PlaybackStartOffsetSeconds,
+    double PlaybackEndOffsetSeconds,
+    double SeekOffsetSeconds,
+    string PlaybackEngine);
 
 public sealed record RecordingAvailabilityDto(
     string State,

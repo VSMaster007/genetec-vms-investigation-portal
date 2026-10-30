@@ -1,8 +1,8 @@
 [
   {
     "incidentId": "INC-2026-001",
-    "title": "Unauthorized entrance",
-    "description": "Motion detected near the main entrance after the door remained open.",
+    "title": "Unauthorized Entrance",
+    "description": "Sample incident generated for demonstrating timestamp-based video investigation.",
     "cameraId": "CAM-ENTRANCE-01",
     "timestamp": "2026-10-30T02:15:20Z",
     "eventType": "Motion Detection",

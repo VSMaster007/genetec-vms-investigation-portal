@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import { api } from '../../services/api'
-import type { AuditRecord } from '../../types/models'
+import type { AuditRecord, GenetecStatus } from '../../types/models'
 
 const links = [
   ['/dashboard', 'Dashboard'],
@@ -19,9 +19,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [notes, setNotes] = useState<AuditRecord[]>([])
+  const [genetecMode, setGenetecMode] = useState<string | null>(null)
 
   useEffect(() => {
     void api<AuditRecord[]>('/api/audit?take=6').then(setNotes).catch(() => setNotes([]))
+    void api<GenetecStatus>('/api/genetec/status').then((status) => setGenetecMode(status.mode)).catch(() => setGenetecMode(null))
   }, [])
 
   return (
@@ -80,6 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <p>{user?.displayName}</p>
             <p className="text-xs text-mist">{user?.role}</p>
           </div>
+          {genetecMode === 'Mock' ? <span className="rounded border border-amber-400/40 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-200">Demo mode</span> : null}
           <button type="button" className="rounded border border-line px-3 py-2 text-sm" onClick={logout}>Sign out</button>
         </header>
         <main className="min-h-0 flex-1">{children}</main>

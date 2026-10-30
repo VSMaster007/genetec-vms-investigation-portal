@@ -9,6 +9,7 @@ public sealed class PlaybackService
     private readonly IInvestigationStore _store;
     private readonly IGenetecService _genetec;
     private readonly PlaybackOptions _playback;
+    private readonly DemoMediaOptions _demo;
     private readonly TimeProvider _time;
     private readonly ILogger<PlaybackService> _logger;
 
@@ -16,12 +17,14 @@ public sealed class PlaybackService
         IInvestigationStore store,
         IGenetecService genetec,
         IOptions<PlaybackOptions> playback,
+        IOptions<DemoMediaOptions> demo,
         TimeProvider time,
         ILogger<PlaybackService> logger)
     {
         _store = store;
         _genetec = genetec;
         _playback = playback.Value;
+        _demo = demo.Value;
         _time = time;
         _logger = logger;
     }
@@ -219,9 +222,19 @@ public sealed class PlaybackService
             notice = assessment.Message;
         }
 
+        var pre = preEventSeconds ?? _playback.DefaultPreEventSeconds;
+        var post = postEventSeconds ?? _playback.DefaultPostEventSeconds;
+        var demo = canPlay && endpoint.IsMock
+            ? BuildDemo(incident.ExternalCameraId, window.EventUtc, pre, post)
+            : null;
+        if (demo is not null)
+        {
+            notice = "DEMO MODE — sample video. This MP4 is not a Genetec archived recording.";
+        }
+
         var session = new PlaybackSessionDto(
             endpoint.Mode,
-            canPlay && endpoint.SupportsBrowserPlayback ? endpoint.Provider : "None",
+            demo is not null ? "DemoMp4" : canPlay && endpoint.SupportsBrowserPlayback ? endpoint.Provider : "None",
             endpoint.SupportsBrowserPlayback && !endpoint.IsMock && assessment.CanAttemptPlayback,
             canPlay,
             notice,
@@ -238,9 +251,10 @@ public sealed class PlaybackService
             window.EventUtc,
             window.StartUtc,
             window.EndUtc,
-            preEventSeconds ?? _playback.DefaultPreEventSeconds,
-            postEventSeconds ?? _playback.DefaultPostEventSeconds,
-            ToAvailability(assessment, recording.IsMock || camera.IsMock));
+            pre,
+            post,
+            ToAvailability(assessment, recording.IsMock || camera.IsMock),
+            demo);
 
         return OperationResult<PlaybackSessionDto>.Ok(session);
     }
@@ -253,6 +267,59 @@ public sealed class PlaybackService
         }
 
         await _store.AddAuditAsync(new AuditEntry(userId, incidentId, action, details), cancellationToken);
+    }
+
+    private DemoRecordingDto? BuildDemo(string externalCameraId, DateTime incidentUtc, int preEventSeconds, int postEventSeconds)
+    {
+        if (!_demo.Enabled || !externalCameraId.Equals(_demo.ExternalCameraId, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        DateTime anchor;
+        try
+        {
+            anchor = TimestampNormalizer.ParseUtc(_demo.AnchorTimestampUtc);
+        }
+        catch (TimestampNormalizationException)
+        {
+            return null;
+        }
+
+        DateTime recordingStart;
+        try
+        {
+            recordingStart = DemoTimestampMapper.RecordingStartForAnchor(anchor, _demo.IncidentOffsetSeconds);
+        }
+        catch (TimestampNormalizationException)
+        {
+            return null;
+        }
+
+        var timeline = DemoTimestampMapper.Map(recordingStart, _demo.DurationSeconds, incidentUtc, preEventSeconds, postEventSeconds);
+        if (timeline is null)
+        {
+            return null;
+        }
+
+        return new DemoRecordingDto(
+            _demo.MediaUrl,
+            _demo.SourceName,
+            _demo.SourceUrl,
+            _demo.CameraName,
+            _demo.ExternalCameraId,
+            _demo.Location,
+            _demo.CameraType,
+            _demo.CameraStatus,
+            "Demo",
+            timeline.RecordingStartUtc,
+            timeline.RecordingEndUtc,
+            timeline.DurationSeconds,
+            timeline.IncidentOffsetSeconds,
+            timeline.PlaybackStartOffsetSeconds,
+            timeline.PlaybackEndOffsetSeconds,
+            timeline.SeekOffsetSeconds,
+            "HTML5 Video");
     }
 
     private static RecordingAvailabilityDto ToAvailability(RecordingAssessment assessment, bool isMock) =>

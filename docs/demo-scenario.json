@@ -1,0 +1,57 @@
+{
+  "purpose": "Client demonstration of timestamp-based video investigation. The media file is a sample MP4, not a Genetec archived recording.",
+  "video": {
+    "sourceName": "Big Buck Bunny Sample MP4",
+    "sourceUrl": "https://docs.evostream.com/sample_content/assets/bunny.mp4",
+    "localPath": "frontend/public/demo-media/bunny.mp4",
+    "mediaUrl": "/demo-media/bunny.mp4",
+    "container": "ISO BMFF (mov/mp4), major brand qt",
+    "videoCodec": "H.264 Constrained Baseline",
+    "audioCodec": "AAC-LC",
+    "width": 424,
+    "height": 240,
+    "frameRate": 24,
+    "durationSeconds": 596.458333,
+    "sizeBytes": 39115190,
+    "bitRate": 524632,
+    "playbackEngine": "HTML5 Video"
+  },
+  "camera": {
+    "name": "Main Entrance Camera",
+    "externalCameraId": "CAM-ENTRANCE-01",
+    "location": "Main Entrance",
+    "type": "IP Camera",
+    "status": "Online",
+    "integrationMode": "Demo"
+  },
+  "recording": {
+    "recordingStartUtc": "2026-10-30T02:12:20.000Z",
+    "recordingEndUtc": "2026-10-30T02:22:16.458333Z",
+    "durationSeconds": 596.458333,
+    "anchorTimestampUtc": "2026-10-30T02:15:20.000Z",
+    "incidentOffsetSeconds": 180
+  },
+  "incident": {
+    "incidentId": "INC-2026-001",
+    "title": "Unauthorized Entrance",
+    "eventType": "Motion Detection",
+    "location": "Main Entrance",
+    "description": "Sample incident generated for demonstrating timestamp-based video investigation.",
+    "timestampUtc": "2026-10-30T02:15:20.000Z",
+    "externalCameraId": "CAM-ENTRANCE-01"
+  },
+  "playbackWindow": {
+    "preEventSeconds": 60,
+    "postEventSeconds": 60,
+    "playbackStartUtc": "2026-10-30T02:14:20.000Z",
+    "playbackEndUtc": "2026-10-30T02:16:20.000Z",
+    "playbackStartOffsetSeconds": 120,
+    "playbackEndOffsetSeconds": 240,
+    "seekOffsetSeconds": 180
+  },
+  "mapping": {
+    "formula": "mediaOffsetSeconds = incidentTimestampUtc - recordingStartTimestampUtc",
+    "playbackStartOffset": "max(0, incidentOffsetSeconds - preEventSeconds)",
+    "playbackEndOffset": "min(videoDurationSeconds, incidentOffsetSeconds + postEventSeconds)"
+  }
+}

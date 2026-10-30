@@ -21,7 +21,7 @@ public class InvestigationApiTests : IClassFixture<PortalFactory>
         var client = await ClientAsync();
         var page = await client.GetFromJsonAsync<JsonElement>("/api/incidents?incidentId=INC-2026-001");
         var item = page.GetProperty("items").EnumerateArray().Single();
-        Assert.Equal("Unauthorized entrance", item.GetProperty("title").GetString());
+        Assert.Equal("Unauthorized Entrance", item.GetProperty("title").GetString());
         Assert.Equal("CAM-ENTRANCE-01", item.GetProperty("externalCameraId").GetString());
         Assert.Equal("Mapped", item.GetProperty("mappingStatus").GetString());
     }
@@ -54,12 +54,20 @@ public class InvestigationApiTests : IClassFixture<PortalFactory>
         response.EnsureSuccessStatusCode();
         var session = await response.Content.ReadFromJsonAsync<JsonElement>();
         Assert.Equal("Mock", session.GetProperty("mode").GetString());
-        Assert.Equal("None", session.GetProperty("provider").GetString());
+        Assert.Equal("DemoMp4", session.GetProperty("provider").GetString());
         Assert.False(session.GetProperty("isGenetecRecording").GetBoolean());
         Assert.True(session.GetProperty("canPlay").GetBoolean());
         Assert.Equal("Available", session.GetProperty("availability").GetProperty("state").GetString());
         Assert.True(session.GetProperty("availability").GetProperty("isMockArchive").GetBoolean());
         Assert.Equal(JsonValueKind.Null, session.GetProperty("mediaGatewayEndpoint").ValueKind);
+        var demo = session.GetProperty("demo");
+        Assert.Equal("/demo-media/bunny.mp4", demo.GetProperty("mediaUrl").GetString());
+        Assert.Equal("HTML5 Video", demo.GetProperty("playbackEngine").GetString());
+        var duration = demo.GetProperty("durationSeconds").GetDouble();
+        var offset = demo.GetProperty("seekOffsetSeconds").GetDouble();
+        Assert.InRange(offset, 60, duration - 60);
+        Assert.Equal(offset - 60, demo.GetProperty("playbackStartOffsetSeconds").GetDouble(), 3);
+        Assert.Equal(offset + 60, demo.GetProperty("playbackEndOffsetSeconds").GetDouble(), 3);
     }
 
     [Fact]
