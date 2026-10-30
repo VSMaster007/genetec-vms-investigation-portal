@@ -92,6 +92,7 @@ describe('GenetecVideoPlayer demo recording', () => {
     }} timeZone="UTC" />)
     expect(screen.getByText('DEMO MODE — SAMPLE VIDEO. This file is Big Buck Bunny, not a Genetec archive.')).toBeInTheDocument()
     expect(screen.getByText('Main Entrance Camera')).toBeInTheDocument()
+    expect(screen.getByText(/02:15:20 UTC/)).toBeInTheDocument()
     const video = document.querySelector('video')
     expect(video?.getAttribute('src')).toBe('/demo-media/bunny.mp4')
   })
